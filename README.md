@@ -1,28 +1,20 @@
-# Ethereum Fullstack Template
+# Carbonium Dapp
 
-This repository contains a `create-react-app` template that can be used to develop an ethereum dApp.
+## Set up
 
-## Quick Start
-
-1. Switching to test network (RINKEBY) (Optional)
+1. Run  ```yarn install```
+2. Switching to test network (RINKEBY) (Optional)
 
    - Please skip this step if you want to use local network
    - Change line - `const NETWORK = LOCAL_NETWORK` to `const NETWORK = TEST_NETWORK` in `hardhat.config.js`
    - Replace `YOUR_ALCHEMY_API_KEY` with your api key from alchemy in `.env` file
    - Replace `YOUR_WALLET_PRIVATE_KEY` with your wallet's private key from metamask wallet in `.env` file
-
-2. Running test for sample contract
-
-   ```bash
-   npx hardhat test
-   ```
-
 ## Running your app locally
 
 1. Start your react frontend
 
    ```bash
-   npm start
+   yarn start
    ```
 
 2. Start a hardhat node
@@ -46,6 +38,12 @@ This repository contains a `create-react-app` template that can be used to devel
    - To configure an account copy its private key from the terminal (i.e the text after `Private Key:`)
    - Open Metamask > Click the account icon on top right > Import Account > Paste the private key you just copied > click Import
    - You should now have the account connected with 10000 ETH
+
+5. Running test for sample contract
+
+   ```bash
+   npx hardhat test
+   ```
 
 ## What’s Included?
 

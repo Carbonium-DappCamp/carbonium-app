@@ -1,7 +1,7 @@
 function App() {
   return (
     <div className="App">
-      Ethereum Fullstack Template
+      Carbonium App
     </div>
   );
 }
