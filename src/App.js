@@ -1,8 +1,13 @@
+import BaseLayout from "./components/BaseLayout";
+import { AppContextProvider } from "./contexts/AppContext";
+
 function App() {
   return (
-    <div className="App">
-      Carbonium App
-    </div>
+    <AppContextProvider>
+      <div className="App">
+        <BaseLayout></BaseLayout>
+      </div>
+    </AppContextProvider>
   );
 }
 
