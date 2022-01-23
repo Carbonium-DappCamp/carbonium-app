@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useAppContext } from '../../contexts/AppContext';
+import DisplayParcel from '../DisplayParcel';
 import './styles.css';
 
 function Dashboard() {
@@ -18,11 +19,7 @@ function Dashboard() {
   return (
     <div className="container">
       <h1>My Parcels</h1>
-      {parcels?.map((p, index) => {
-        return <div key={index}>
-          {p["id"]}
-        </div>
-      })}
+      {parcels?.map((p, index) => <DisplayParcel parcel={p} key={index} />)}
     </div>
   );
 }
