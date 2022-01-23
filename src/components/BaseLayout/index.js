@@ -1,14 +1,10 @@
 import './styles.css';
 
-function BaseLayout() {
+function BaseLayout({ children }) {
   return (
     <div className="container">
-      <div>
-        Grid 1
-      </div>
-      <div>
-        Grid 2
-      </div>
+      <h1>Carbonium App</h1>
+      {children}
     </div>
   );
 }
