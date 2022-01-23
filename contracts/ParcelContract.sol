@@ -14,7 +14,7 @@ contract ParcelContract is
     using Strings for uint256;
 
     Counters.Counter public _tokenIds;
-    string public baseURI;
+    string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
 
     constructor() {
         // Mint 10 parcels initially

@@ -45,6 +45,31 @@
    npx hardhat test
    ```
 
+## Generating images and metadata
+
+The generation of the parcel map images and metadata takes place in `parcel_data`.
+Inside that directory:
+
+1. Create a virtual environment, activate it and install dependencies:
+
+   ```bash
+   python3 -m venv .venv
+   source .venv/bin/activate
+   pip install -r requirements.txt
+   ```
+
+2. The image generator uses the [mapbox API](https://account.mapbox.com).
+   So once you have created your API key, export it:
+
+   ```bash
+   export MAPBOX_ACCESS_TOKEN=pk...
+   ```
+
+3. Generate the images by running `python images.py` and upload the folder to [IPFS](https://app.pinata.cloud/pinmanager). Note the generated Hash of the directory.
+
+4. Set the `ipfsBaseURL` inside `metadata.py` to the hash generated in the previous step and run `python metadata.py`.
+  Upload the metadata directory to IPFS as well and note the generated hash. This will be your `baseURI` in the smartcontract.
+
 ## What’s Included?
 
 Your environment will have following set up:
