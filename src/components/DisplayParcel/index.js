@@ -1,8 +1,8 @@
-import './styles.css';
+import styles from './styles.module.scss';
 
 function DisplayParcel({ parcel }) {
   return (
-    <div className="container">
+    <div className={styles.container}>
       {parcel["id"]}
       {parcel["country"]}
       {parcel["title"]}

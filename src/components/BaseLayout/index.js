@@ -1,8 +1,8 @@
-import './styles.css';
+import styles from './styles.module.scss';
 
 function BaseLayout({ children }) {
   return (
-    <div className="container">
+    <div className={styles.container}>
       <h1>Carbonium App</h1>
       {children}
     </div>

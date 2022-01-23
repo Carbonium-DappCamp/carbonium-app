@@ -20,17 +20,15 @@ function App() {
 
   return (
     <AppContextProvider>
-      <div className="App">
-        <BaseLayout>
-          <div className="tabs">
-            <button onClick={() => setCurrentTab(TABS.DASHBOARD)}>
-              Dashboard
-            </button>
-            <button onClick={() => setCurrentTab(null)}>Get More</button>
-          </div>
-          {renderTab()}
-        </BaseLayout>
-      </div>
+      <BaseLayout>
+        <div className="tabs">
+          <button onClick={() => setCurrentTab(TABS.DASHBOARD)}>
+            Dashboard
+          </button>
+          <button onClick={() => setCurrentTab(null)}>Get More</button>
+        </div>
+        {renderTab()}
+      </BaseLayout>
     </AppContextProvider>
   );
 }
