@@ -1,0 +1,10 @@
+.container {
+  display: grid;
+  place-items: center;
+}
+
+.parcels {
+  display: grid;
+  grid-gap: 50px;
+  grid-template-columns: repeat(3, 1fr);
+}
