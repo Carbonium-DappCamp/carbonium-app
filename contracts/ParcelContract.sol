@@ -16,9 +16,12 @@ contract ParcelContract is
     Counters.Counter public _tokenIds;
     string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
 
+    uint constant  _grantAmount = 10;
+    mapping (address => bool) _hasClaimed;
+
     constructor() {
-        // Mint 10 parcels initially
-        for (uint i = 0; i < 10; i++) {
+        // Mint all 1000 parcels initially
+        for (uint i = 0; i < 1000; i++) {
             mint(msg.sender);
         }
     }
@@ -38,5 +41,16 @@ contract ParcelContract is
         _tokenIds.increment();
 
         return id;
+    }
+
+    // Grant a batch of parcel NFTs to a new owner.
+    function grant(address _to) public onlyOwner {
+        for (uint i = 0; i < _grantAmount; i++) {
+            grantOne(_to);
+        }
+    }
+
+    function grantOne(address _to) public onlyOwner {
+
     }
 }
