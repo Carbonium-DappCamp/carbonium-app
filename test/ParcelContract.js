@@ -18,7 +18,7 @@ describe("Parcel Contract", () => {
   describe("Contract creation", async function () {
     it("1000 parcels are minted on creation", async function () {
       const ownerBalance = await parcelContract.balanceOf(owner.address);
-      expect(ownerBalance).to.equal(1000);
+      expect(ownerBalance).to.equal(100);
     });
     it("A parcel has an URI", async function () {
       const uri = await parcelContract.tokenURI(0);
@@ -35,16 +35,7 @@ describe("Parcel Contract", () => {
       expect(addr1Balance).to.equal(0);
       const approvedAddr = await parcelContract.getApproved(0);
       expect(approvedAddr == owner);
-
     });
 
-    it("Should allow transfer of NFT", async () => {
-      await parcelContract.connect(owner).approve(addr1, 0)
-      /*expect(parcelContract.connect(owner).approve(addr1, 0))
-            .to
-            .emit(parcelContract, "Aproval")
-            .withArgs("Hello World!");
-            */
-    });
   });
 });
