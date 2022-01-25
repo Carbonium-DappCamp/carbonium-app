@@ -33,7 +33,7 @@ describe("Parcel Contract", () => {
       const addr1Balance = await parcelContract.connect(owner).balanceOf(addr1.address);
       expect(addr1Balance).to.equal(0);
       const addr2Balance = await parcelContract.connect(owner).balanceOf(addr2.address);
-      expect(addr1Balance).to.equal(0);
+      expect(addr2Balance).to.equal(0);
       const approvedAddr = await parcelContract.getApproved(0);
       expect(approvedAddr == owner);
     });
@@ -44,6 +44,14 @@ describe("Parcel Contract", () => {
             .withArgs(owner.address, addr1.address, 0);
       const addr1Balance = await parcelContract.connect(owner).balanceOf(addr1.address);
       expect(addr1Balance).to.equal(1);
+    });
+  });
+
+  describe("Batch parcel transfer", async function () {
+    it ("Should grant 10 tokens", async function () {
+       await parcelContract.connect(owner).grant(addr2.address);
+       const addr2Balance = await parcelContract.connect(owner).balanceOf(addr2.address);
+       expect(addr2Balance).to.equal(10);
     });
   });
 });
