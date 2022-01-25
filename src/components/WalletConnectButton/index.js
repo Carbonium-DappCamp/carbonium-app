@@ -1,7 +1,7 @@
 import styles from "./styles.module.scss";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Web3 from "web3";
 
 const providerOptions = {
@@ -23,6 +23,16 @@ const WalletConnectButton = () => {
 	const [chainId, setChainId] = useState();
 	const [networkId, setNetworkId] = useState();
 	let provider;
+
+	// Attempt to reconnect to wallet on reload
+	useEffect(() => {
+		(async () => {
+			provider = await Web3Modal.connectTo("walletconnect");
+		})().catch((err) => {
+			console.error(err);
+		});
+		onConnect();
+	}, []);
 
 	async function fetchAccountData() {
 		// Get a Web3 instance for the wallet
@@ -50,6 +60,8 @@ const WalletConnectButton = () => {
 			return;
 		}
 
+		console.log("Current provider is", provider);
+
 		// Subscribe to accounts change
 		provider.on("accountsChanged", (_accounts) => {
 			setAccounts(_accounts);
@@ -71,16 +83,35 @@ const WalletConnectButton = () => {
 		await fetchAccountData();
 	}
 
-	const WalletConnected = () => (
-		<div className={styles.connectedContainer}>{accounts[0]}</div>
-	);
+	// Currently not called by anything
+	async function onDisconnect() {
+		if (accounts === null) {
+			console.log("Nothing to disconnect");
+			return;
+		}
+		console.log("Killing the wallet connection", provider);
+		await provider.close();
 
-	return accounts === null ? (
-		<button onClick={onConnect} id={styles.WalletConnectButton}>
-			Connect Wallet
-		</button>
-	) : (
-		<WalletConnected></WalletConnected>
+		// If the cached provider is not cleared,
+		// WalletConnect will default to the existing session
+		// and does not allow to re-scan the QR code with a new wallet.
+		// Depending on your use case you may want or want not his behavir.
+		await web3Modal.clearCachedProvider();
+		provider = null;
+
+		setAccounts(null);
+	}
+
+	return (
+		<>
+			<button onClick={onConnect} id={styles.WalletConnectButton}>
+				{accounts === null
+					? "Connect Wallet"
+					: accounts[0].substring(0, 5) +
+					  "..." +
+					  accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
+			</button>
+		</>
 	);
 };
 
