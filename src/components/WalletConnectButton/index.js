@@ -14,7 +14,7 @@ const providerOptions = {
 };
 
 const web3Modal = new Web3Modal({
-	cacheProvider: false, // optional
+	cacheProvider: true, // optional
 	providerOptions, // required
 });
 
@@ -33,9 +33,7 @@ const WalletConnectButton = () => {
 		// Get connected chain id from Ethereum node
 		const chainId = await web3.eth.getChainId();
 		console.log(chainId);
-		// Load chain information over an HTTP API
 
-		// Get list of accounts of the connected wallet
 		const accounts = await web3.eth.getAccounts();
 
 		// MetaMask does not give you all accounts, only the selected account
@@ -49,25 +47,25 @@ const WalletConnectButton = () => {
 			provider = await web3Modal.connect();
 		} catch (e) {
 			console.log("Could not get a wallet connection", e);
-			return false;
+			return;
 		}
 
 		// Subscribe to accounts change
-		provider.on("accountsChanged", (accounts) => {
+		provider.on("accountsChanged", (_accounts) => {
+			setAccounts(_accounts);
 			console.log("Accounts: ", accounts);
-			setAccounts(accounts);
 		});
 
 		// Subscribe to chainId change
-		provider.on("chainChanged", (chainId) => {
+		provider.on("chainChanged", (_chainId) => {
+			setChainId(_chainId);
 			console.log("ChainID: ", chainId);
-			setChainId(chainId);
 		});
 
 		// Subscribe to networkId change
-		provider.on("networkChanged", (networkId) => {
+		provider.on("networkChanged", (_networkId) => {
+			setNetworkId(_networkId);
 			console.log("Network Id: ", networkId);
-			setNetworkId(networkId);
 		});
 
 		await fetchAccountData();
