@@ -16,9 +16,10 @@ describe("Parcel Contract", () => {
     });
 
   describe("Contract creation", async function () {
-    it("1000 parcels are minted on creation", async function () {
+    it("Max parcels are minted on creation", async function () {
       const ownerBalance = await parcelContract.balanceOf(owner.address);
-      expect(ownerBalance).to.equal(100);
+      const maxParcels = await parcelContract.getMaxParcels();
+      expect(ownerBalance).to.equal(maxParcels);
     });
     it("A parcel has an URI", async function () {
       const uri = await parcelContract.tokenURI(0);
@@ -36,6 +37,13 @@ describe("Parcel Contract", () => {
       const approvedAddr = await parcelContract.getApproved(0);
       expect(approvedAddr == owner);
     });
-
+    it ("Should emit a Transfer event", async function () {
+      expect(parcelContract.connect(owner).grantOne(addr1.address, 0))
+            .to
+            .emit(parcelContract, "Transfer")
+            .withArgs(owner.address, addr1.address, 0);
+      const addr1Balance = await parcelContract.connect(owner).balanceOf(addr1.address);
+      expect(addr1Balance).to.equal(1);
+    });
   });
 });

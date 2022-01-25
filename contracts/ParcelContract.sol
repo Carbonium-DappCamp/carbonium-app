@@ -17,7 +17,7 @@ contract ParcelContract is
     string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
 
     uint constant _grantAmount = 10;
-    uint constant _maxParcels = 100;
+    uint constant _maxParcels = 50;
     mapping (address => bool) _hasClaimed;
     // TODO: parcel awards should be random, but for now increment through
     // until all are awarded
@@ -28,6 +28,10 @@ contract ParcelContract is
         for (uint i = 0; i < _maxParcels; i++) {
             mint(msg.sender);
         }
+    }
+
+    function getMaxParcels() public pure returns (uint) {
+        return _maxParcels;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
@@ -47,18 +51,20 @@ contract ParcelContract is
         return id;
     }
 
+
     // Grant a batch of parcel NFTs to a new owner.
     function grant(address _to) public onlyOwner {
         require(_to != address(0));
         require(_availbleParcel < (_maxParcels - _grantAmount));
         for (uint i = 0; i < _grantAmount; i++) {
             grantOne(_to, _availbleParcel);
-            _availbleParcel++;
         }
     }
 
-    function grantOne(address _to, uint _tokenId) private onlyOwner {
-        _approve(_to, _tokenId);
+    // Public for now
+    function grantOne(address _to, uint _tokenId) public onlyOwner {
+        //_approve(_to, _tokenId);
         safeTransferFrom(msg.sender, _to, _tokenId);
+        _availbleParcel++;
     }
 }
