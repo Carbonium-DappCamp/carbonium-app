@@ -20,95 +20,117 @@ const web3Modal = new Web3Modal({
 
 const WalletConnectButton = () => {
 	const [accounts, setAccounts] = useState(null);
-	const [chainId, setChainId] = useState();
-	const [networkId, setNetworkId] = useState();
-	const provider = useRef(null);
+	const connected = useRef(false);
+	const chainId = useRef();
+	const provider = useRef();
+
+	// Set connected status
+	useEffect(() => {
+		if (provider.current !== undefined) {
+			connected.current = true;
+		} else {
+			connected.current = false;
+		}
+		console.log("Connection status: ", connected.current);
+		console.log("Current provider: ", provider.current);
+	});
 
 	// Attempt to reconnect to wallet on reload
 	useEffect(() => {
 		(async () => {
-			provider.current = await Web3Modal.connect();
-		})().catch((err) => {});
-		if (attemptConnection()) {
-		}
+			if (web3Modal.cachedProvider) {
+				try {
+					provider.current = await web3Modal.connect();
+				} catch (e) {
+					console.log("Could not get a wallet connection", e);
+					return;
+				}
+				listenForWalletChanges();
+				await fetchAccountData();
+			}
+		})().catch((err) => {
+			console.error(err);
+		});
 	}, []);
 
 	async function fetchAccountData() {
 		// Get a Web3 instance for the wallet
-		const web3 = new Web3(provider);
+		const web3 = new Web3(provider.current);
 
 		console.log("Web3 instance is", web3);
 
 		// Get connected chain id from Ethereum node
-		const chainId = await web3.eth.getChainId();
-		console.log(chainId);
+		const _chainId = await web3.eth.getChainId();
+		console.log(_chainId);
 
-		const accounts = await web3.eth.getAccounts();
+		const _accounts = await web3.eth.getAccounts();
 
 		// MetaMask does not give you all accounts, only the selected account
-		console.log("Got accounts", accounts);
-		setAccounts(accounts);
+		console.log("Got accounts", _accounts);
+		setAccounts(_accounts);
 	}
 
 	async function onConnect() {
 		console.log("Opening a dialog", web3Modal);
-		attemptConnection();
-
-		console.log("Current provider is", provider);
-
-		// Subscribe to accounts change
-		provider.current.on("accountsChanged", (_accounts) => {
-			setAccounts(_accounts);
-			console.log("Accounts: ", accounts);
-		});
-
-		// Subscribe to chainId change
-		provider.current.on("chainChanged", (_chainId) => {
-			setChainId(_chainId);
-			console.log("ChainID: ", chainId);
-		});
-
-		// Subscribe to networkId change
-		provider.current.on("networkChanged", (_networkId) => {
-			setNetworkId(_networkId);
-			console.log("Network Id: ", networkId);
-		});
+		try {
+			provider.current = await web3Modal.connect();
+		} catch (e) {
+			console.log("Could not get a wallet connection", e);
+			return;
+		}
+		listenForWalletChanges();
 
 		await fetchAccountData();
 	}
 
-	async function attemptConnection() {
-		try {
-			provider.current = await web3Modal.connect();
-			return true;
-		} catch (e) {
-			console.log("Could not get a web3Modal connection.\n", e);
-			return false;
-		}
+	async function listenForWalletChanges() {
+		console.log("Current provider is", provider.current);
+
+		// Subscribe to accounts change
+		provider.current.on("accountsChanged", (_accounts) => {
+			setAccounts(_accounts);
+			console.log("Accounts changed to: ", accounts);
+		});
+
+		// Subscribe to chainId change
+		provider.current.on("chainChanged", (_chainId) => {
+			chainId.current = _chainId;
+			console.log("ChainID changed to: ", chainId);
+		});
+
+		provider.current.on("connect", () => {
+			connected.current = true;
+			fetchAccountData();
+		});
+
+		provider.current.on("disconnect", () => {
+			onDisconnect();
+		});
 	}
 
 	// Currently not called by anything
 	async function onDisconnect() {
-		if (accounts === null) {
-			console.log("Nothing to disconnect");
-			return;
-		}
+		console.log(connected.current);
 		console.log("Killing the wallet connection", provider);
-		await provider.close();
+		//await provider.current.close();
 
 		// If the cached provider is not cleared,
 		// WalletConnect will default to the existing session
 		// and does not allow to re-scan the QR code with a new wallet.
 		// Depending on your use case you may want or want not his behavir.
-		await web3Modal.clearCachedProvider();
-		provider.current = null;
-
+		connected.current = false;
 		setAccounts(null);
+		web3Modal.clearCachedProvider();
+		provider.current = null;
 	}
 
 	return (
 		<>
-			<button onClick={onConnect} id={styles.WalletConnectButton}>
+			<button
+				onClick={onConnect}
+				className={styles.button}
+				id={connected.current ? styles.connected : styles.disconnected}
+			>
 				{accounts === null
 					? "Connect Wallet"
 					: accounts[0].substring(0, 5) +
