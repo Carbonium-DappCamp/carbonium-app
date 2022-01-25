@@ -1,7 +1,7 @@
 import styles from "./styles.module.scss";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
 
 const providerOptions = {
@@ -22,16 +22,15 @@ const WalletConnectButton = () => {
 	const [accounts, setAccounts] = useState(null);
 	const [chainId, setChainId] = useState();
 	const [networkId, setNetworkId] = useState();
-	let provider;
+	const provider = useRef(null);
 
 	// Attempt to reconnect to wallet on reload
 	useEffect(() => {
 		(async () => {
-			provider = await Web3Modal.connectTo("walletconnect");
-		})().catch((err) => {
-			console.error(err);
-		});
-		onConnect();
+			provider.current = await Web3Modal.connect();
+		})().catch((err) => {});
+		if (attemptConnection()) {
+		}
 	}, []);
 
 	async function fetchAccountData() {
@@ -53,34 +52,39 @@ const WalletConnectButton = () => {
 
 	async function onConnect() {
 		console.log("Opening a dialog", web3Modal);
-		try {
-			provider = await web3Modal.connect();
-		} catch (e) {
-			console.log("Could not get a wallet connection", e);
-			return;
-		}
+		attemptConnection();
 
 		console.log("Current provider is", provider);
 
 		// Subscribe to accounts change
-		provider.on("accountsChanged", (_accounts) => {
+		provider.current.on("accountsChanged", (_accounts) => {
 			setAccounts(_accounts);
 			console.log("Accounts: ", accounts);
 		});
 
 		// Subscribe to chainId change
-		provider.on("chainChanged", (_chainId) => {
+		provider.current.on("chainChanged", (_chainId) => {
 			setChainId(_chainId);
 			console.log("ChainID: ", chainId);
 		});
 
 		// Subscribe to networkId change
-		provider.on("networkChanged", (_networkId) => {
+		provider.current.on("networkChanged", (_networkId) => {
 			setNetworkId(_networkId);
 			console.log("Network Id: ", networkId);
 		});
 
 		await fetchAccountData();
+	}
+
+	async function attemptConnection() {
+		try {
+			provider.current = await web3Modal.connect();
+			return true;
+		} catch (e) {
+			console.log("Could not get a web3Modal connection.\n", e);
+			return false;
+		}
 	}
 
 	// Currently not called by anything
@@ -97,7 +101,7 @@ const WalletConnectButton = () => {
 		// and does not allow to re-scan the QR code with a new wallet.
 		// Depending on your use case you may want or want not his behavir.
 		await web3Modal.clearCachedProvider();
-		provider = null;
+		provider.current = null;
 
 		setAccounts(null);
 	}
