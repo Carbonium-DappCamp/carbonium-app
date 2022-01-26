@@ -16,7 +16,6 @@ contract ParcelContract is
     Counters.Counter public _tokenIds;
     string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
 
-    uint constant _grantAmount = 10;
     uint constant _maxParcels = 50;
     mapping (address => bool) _hasClaimed;
     // TODO: parcel awards should be random, but for now increment through
@@ -51,19 +50,17 @@ contract ParcelContract is
         return id;
     }
 
-
     // Grant a batch of parcel NFTs to a new owner.
-    function grant(address _to) public onlyOwner {
+    function grant(address _to, uint _count) public onlyOwner {
         require(_to != address(0));
-        require(_availbleParcel < (_maxParcels - _grantAmount));
-        for (uint i = 0; i < _grantAmount; i++) {
+        require(_availbleParcel < (_maxParcels - _count));
+        for (uint i = 0; i < _count; i++) {
             grantOne(_to, _availbleParcel);
         }
     }
 
-    // Public for now
+    // Public for now, could be made private
     function grantOne(address _to, uint _tokenId) public onlyOwner {
-        //_approve(_to, _tokenId);
         safeTransferFrom(msg.sender, _to, _tokenId);
         _availbleParcel++;
     }

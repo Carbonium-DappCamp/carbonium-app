@@ -38,7 +38,7 @@ describe("Parcel Contract", () => {
       expect(approvedAddr == owner);
     });
     it ("Should emit a Transfer event", async function () {
-      expect(parcelContract.connect(owner).grantOne(addr1.address, 0))
+      expect(parcelContract.connect(owner).grant(addr1.address, 1))
             .to
             .emit(parcelContract, "Transfer")
             .withArgs(owner.address, addr1.address, 0);
@@ -49,7 +49,7 @@ describe("Parcel Contract", () => {
 
   describe("Batch parcel transfer", async function () {
     it ("Should grant 10 tokens", async function () {
-       await parcelContract.connect(owner).grant(addr2.address);
+       await parcelContract.connect(owner).grant(addr2.address, 10);
        const addr2Balance = await parcelContract.connect(owner).balanceOf(addr2.address);
        expect(addr2Balance).to.equal(10);
     });
