@@ -1,5 +1,5 @@
 .button {
-    padding: 10px 25px;
+    padding: 20px 25px;
     background-color: #54a3ff;
     border-radius: 2rem;
     color: white;
@@ -8,6 +8,23 @@
     margin: 10px;
     position: absolute;
     right: 50px;
+}
+
+#walletConnectedContentContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#disconnectButton {
+    margin-right: 15px;
+    width: 30px;
+    height: 30px;
+    background-color: red;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 #connected {

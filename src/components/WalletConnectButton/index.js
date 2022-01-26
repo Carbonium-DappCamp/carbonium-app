@@ -149,17 +149,16 @@ const WalletConnectButton = () => {
 		//setConnected(false);
 	}
 
-	const accountTrimmer = () => {
-		try {
-			return (
-				accounts[0].substring(0, 5) +
+	const walletConnectedContent = () => (
+		<div id={styles.walletConnectedContentContainer}>
+			<div id={styles.disconnectButton} onClick={onDisconnect}>
+				X
+			</div>
+			{accounts[0].substring(0, 5) +
 				"..." +
-				accounts[0].substring(accounts[0].length - 4, accounts[0].length)
-			);
-		} catch (e) {
-			return "";
-		}
-	};
+				accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
+		</div>
+	);
 
 	return (
 		<button
@@ -167,7 +166,7 @@ const WalletConnectButton = () => {
 			className={styles.button}
 			id={connected ? styles.connected : styles.disconnected}
 		>
-			{connected ? accountTrimmer() : "Connect Wallet"}
+			{connected ? walletConnectedContent() : "Connect Wallet"}
 		</button>
 	);
 };
