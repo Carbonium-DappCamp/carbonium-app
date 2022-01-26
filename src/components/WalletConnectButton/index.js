@@ -3,7 +3,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-import { ethers } from "ethers";
+import { useAppContext } from "../../contexts/AppContext";
 
 const providerOptions = {
 	walletconnect: {
@@ -24,6 +24,10 @@ const WalletConnectButton = () => {
 	const [connected, setConnected] = useState(false);
 	const chainId = useRef();
 	const provider = useRef();
+
+	useEffect(() => {
+		// Update web3 context variable when provider is updated
+	}, [provider]);
 
 	// Set connected status
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -149,20 +153,26 @@ const WalletConnectButton = () => {
 		//setConnected(false);
 	}
 
-	const walletConnectedContent = () => (
-		<div id={styles.walletConnectedContentContainer}>
-			<div id={styles.disconnectButton} onClick={onDisconnect}>
-				X
-			</div>
-			{accounts[0].substring(0, 5) +
-				"..." +
-				accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
-		</div>
-	);
+	const walletConnectedContent = () => {
+		try {
+			return (
+				<div id={styles.walletConnectedContentContainer}>
+					<div id={styles.disconnectButton} onClick={onDisconnect}>
+						X
+					</div>
+					{accounts[0].substring(0, 5) +
+						"..." +
+						accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
+				</div>
+			);
+		} catch (e) {
+			console.log(e);
+		}
+	};
 
 	return (
 		<button
-			onClick={connected ? onDisconnect : onConnect}
+			onClick={connected ? null : onConnect}
 			className={styles.button}
 			id={connected ? styles.connected : styles.disconnected}
 		>
