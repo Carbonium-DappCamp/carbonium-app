@@ -7073,6 +7073,11 @@ ethashjs@~0.0.7:
     ethereumjs-util "^7.0.2"
     miller-rabin "^4.0.0"
 
+ether.js@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/ether.js/-/ether.js-1.0.0.tgz#dc4ecbc6ab2b1accc8863c13fac4017b4a323e83"
+  integrity sha512-wyRcd9W2zx8GGxQYf5DHP7kDWBUFMs8Z6IqZ4Os+lNv99+0a+92LarD9hn5IFjaBaE3/pvk2tGyhRiagulr42A==
+
 ethereum-bloom-filters@^1.0.6:
   version "1.0.10"
   resolved "https://registry.yarnpkg.com/ethereum-bloom-filters/-/ethereum-bloom-filters-1.0.10.tgz#3ca07f4aed698e75bd134584850260246a5fed8a"

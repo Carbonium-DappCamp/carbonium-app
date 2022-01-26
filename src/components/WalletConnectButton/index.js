@@ -3,6 +3,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
+import { ethers } from "ethers";
 
 const providerOptions = {
 	walletconnect: {
@@ -25,29 +26,53 @@ const WalletConnectButton = () => {
 	const provider = useRef();
 
 	// Set connected status
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	useEffect(() => {
-		if (provider.current !== undefined) {
-			connected(true);
+		if (provider.current === null || provider.current === undefined) {
+			setConnected(false);
 		} else {
-			connected(false);
+			setConnected(true);
 		}
 		console.log("Connection status: ", connected);
 		console.log("Current provider: ", provider.current);
-	}, [provider.current, connected]);
+	});
 
 	// Attempt to reconnect to wallet on reload
+	// TODO: Fix caching so wallet will reconnect on reload without automatically triggering the modal onLoad to new users
 	useEffect(() => {
 		(async () => {
-			if (web3Modal.cachedProvider) {
-				try {
-					provider.current = await web3Modal.connect();
-				} catch (e) {
-					console.log("Could not get a wallet connection", e);
-					return;
+			(async function () {
+				if (web3Modal.cachedProvider) {
+					try {
+						provider.current = await web3Modal.connect();
+					} catch (e) {
+						console.log("Could not get a wallet connection", e);
+						return;
+					}
+					listenForWalletChanges();
+					await fetchAccountData();
 				}
-				listenForWalletChanges();
-				await fetchAccountData();
-			}
+
+				// From:
+				// Get the cached provider from LocalStorage
+				// const cachedProviderName = JSON.parse(
+				// 	localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER")
+				// );
+				// console.log(cachedProviderName);
+				// console.log(web3Modal);
+				// Get the connector for the cachedProviderName
+				// const connector = await web3Modal.providerController.providerOptions[
+				// 	cachedProviderName
+				// ].connector();
+				// // Evaluate connector() which returns a Proxy in the case of MetaMask
+				// const proxy = await connector(); // Some connector may need providerPackage and opts
+				// console.log("Proxy", proxy);
+				// // Get the working provider from your favorite library (ethers, web3, ...)
+				// const provider = new ethers.providers.Web3Provider(proxy); // If you use web3, then const web3 = new Web3(proxy);
+				// console.log("Provider", provider);
+				// // You can list the connected accounts without launching Web3Modal
+				// console.log("Accounts", await provider.listAccounts()); // If you use web3, then await web3.eth.getAccounts();
+			})();
 		})().catch((err) => {
 			console.error(err);
 		});
@@ -99,42 +124,50 @@ const WalletConnectButton = () => {
 		});
 
 		provider.current.on("connect", () => {
-			setConnected(true);
+			//setConnected(true);
 			fetchAccountData();
 		});
 
-		provider.current.on("disconnect", () => {
+		provider.current.on("disconnect", (e) => {
+			console.log(e);
 			onDisconnect();
 		});
 	}
 
 	// Currently not called by anything
 	async function onDisconnect() {
-		console.log(connected);
 		console.log("Killing the wallet connection", provider);
-		//await provider.current.close();
+		//await provider.current.disconnect;
 
 		// If the cached provider is not cleared,
 		// WalletConnect will default to the existing session
 		// and does not allow to re-scan the QR code with a new wallet.
 		// Depending on your use case you may want or want not his behavir.
-		connected(false);
 		setAccounts(null);
-		web3Modal.clearCachedProvider();
 		provider.current = null;
+		web3Modal.clearCachedProvider();
+		//setConnected(false);
 	}
+
+	const accountTrimmer = () => {
+		try {
+			return (
+				accounts[0].substring(0, 5) +
+				"..." +
+				accounts[0].substring(accounts[0].length - 4, accounts[0].length)
+			);
+		} catch (e) {
+			return "";
+		}
+	};
 
 	return (
 		<button
-			onClick={onConnect}
+			onClick={connected ? onDisconnect : onConnect}
 			className={styles.button}
 			id={connected ? styles.connected : styles.disconnected}
 		>
-			{accounts === null
-				? "Connect Wallet"
-				: accounts[0].substring(0, 5) +
-				  "..." +
-				  accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
+			{connected ? accountTrimmer() : "Connect Wallet"}
 		</button>
 	);
 };
