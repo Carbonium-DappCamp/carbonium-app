@@ -20,20 +20,20 @@ const web3Modal = new Web3Modal({
 
 const WalletConnectButton = () => {
 	const [accounts, setAccounts] = useState(null);
-	const connected = useRef(false);
+	const [connected, setConnected] = useState(false);
 	const chainId = useRef();
 	const provider = useRef();
 
 	// Set connected status
 	useEffect(() => {
 		if (provider.current !== undefined) {
-			connected.current = true;
+			connected(true);
 		} else {
-			connected.current = false;
+			connected(false);
 		}
-		console.log("Connection status: ", connected.current);
+		console.log("Connection status: ", connected);
 		console.log("Current provider: ", provider.current);
-	});
+	}, [provider.current, connected]);
 
 	// Attempt to reconnect to wallet on reload
 	useEffect(() => {
@@ -99,7 +99,7 @@ const WalletConnectButton = () => {
 		});
 
 		provider.current.on("connect", () => {
-			connected.current = true;
+			setConnected(true);
 			fetchAccountData();
 		});
 
@@ -110,7 +110,7 @@ const WalletConnectButton = () => {
 
 	// Currently not called by anything
 	async function onDisconnect() {
-		console.log(connected.current);
+		console.log(connected);
 		console.log("Killing the wallet connection", provider);
 		//await provider.current.close();
 
@@ -118,26 +118,24 @@ const WalletConnectButton = () => {
 		// WalletConnect will default to the existing session
 		// and does not allow to re-scan the QR code with a new wallet.
 		// Depending on your use case you may want or want not his behavir.
-		connected.current = false;
+		connected(false);
 		setAccounts(null);
 		web3Modal.clearCachedProvider();
 		provider.current = null;
 	}
 
 	return (
-		<>
-			<button
-				onClick={onConnect}
-				className={styles.button}
-				id={connected.current ? styles.connected : styles.disconnected}
-			>
-				{accounts === null
-					? "Connect Wallet"
-					: accounts[0].substring(0, 5) +
-					  "..." +
-					  accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
-			</button>
-		</>
+		<button
+			onClick={onConnect}
+			className={styles.button}
+			id={connected ? styles.connected : styles.disconnected}
+		>
+			{accounts === null
+				? "Connect Wallet"
+				: accounts[0].substring(0, 5) +
+				  "..." +
+				  accounts[0].substring(accounts[0].length - 4, accounts[0].length)}
+		</button>
 	);
 };
 
