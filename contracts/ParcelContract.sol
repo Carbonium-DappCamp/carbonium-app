@@ -17,10 +17,9 @@ contract ParcelContract is
     string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
 
     uint constant _maxParcels = 50;
-    mapping (address => bool) _hasClaimed;
-    // TODO: parcel awards should be random, but for now increment through
-    // until all are awarded
-    uint _availbleParcel = 0;
+    //mapping (address => bool) _hasClaimed; // TODO: only allow one claim per ETH address?
+
+    uint _parcelGrants = 0;
 
     constructor() {
         // Mint all parcels initially
@@ -50,18 +49,29 @@ contract ParcelContract is
         return id;
     }
 
+    function getRandomUnusedTokenId() public view returns (uint) {
+        uint tokenID = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp))) % _maxParcels;
+        uint count = 0;
+        while (ownerOf(tokenID) != owner()) {
+            tokenID = uint(keccak256(abi.encodePacked(msg.sender, block.timestamp, count))) % _maxParcels;
+            count++;
+        }
+        
+        return tokenID;
+    }
+
     // Grant a batch of parcel NFTs to a new owner.
     function grant(address _to, uint _count) public onlyOwner {
         require(_to != address(0));
-        require(_availbleParcel < (_maxParcels - _count));
+        require(_parcelGrants < (_maxParcels - _count));
         for (uint i = 0; i < _count; i++) {
-            grantOne(_to, _availbleParcel);
+            grantOne(_to, _parcelGrants);
         }
     }
 
     // Public for now, could be made private
     function grantOne(address _to, uint _tokenId) public onlyOwner {
         safeTransferFrom(msg.sender, _to, _tokenId);
-        _availbleParcel++;
+        _parcelGrants++;
     }
 }
