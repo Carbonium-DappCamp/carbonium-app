@@ -41,6 +41,8 @@ function DisplayParcel({ parcel }) {
         description: {parcel["description"]}
         <br />
         area: {parcel["area"]}
+        <br />
+        stock: {parcel["stock"]} ({parcel["stock_ts"]})
       </p>
       <div className={styles.map}>
         <ReactMapGL
