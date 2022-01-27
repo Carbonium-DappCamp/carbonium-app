@@ -14,7 +14,7 @@ contract ParcelContract is
     using Strings for uint256;
 
     Counters.Counter public _tokenIds;
-    string public baseURI = 'ipfs://QmRRqh8G1RGRNTsRq5xKtAcjvMnmDcmSiFqPYU7ngVkz6c';
+    string public baseURI = 'ipfs://QmasZiB9nwU1NwDDVP11CHfqLJQnP8kgUcgZ7Y1v4AYX68';
 
     uint constant _maxParcels = 50;
     mapping (address => bool) _hasClaimed;
