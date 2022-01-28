@@ -65,7 +65,8 @@ contract ParcelContract is
         require(_to != address(0));
         require(_parcelGrants < (_maxParcels - _count));
         for (uint i = 0; i < _count; i++) {
-            grantOne(_to, _parcelGrants);
+            uint newId = getRandomUnusedTokenId();
+            grantOne(_to, newId);
         }
     }
 
