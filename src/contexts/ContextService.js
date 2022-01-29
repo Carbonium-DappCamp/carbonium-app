@@ -1,14 +1,14 @@
 import parcels from '../data/parcel.json';
 import { getAccount, getContract } from '../utils/common';
-import { ethers } from 'ethers';
 import contractAddresses from '../abis/contract-address.json';
 import ParcelContractABI from '../abis/ParcelContract.json';
 import CarboniumTokenABI from '../abis/CarboniumToken.json';
 import CarboniumDistributionABI from '../abis/CarboniumDistribution.json';
+import { create } from 'ipfs-http-client';
 
 // Actions
 const ContextActions = Object.freeze({
-  GOT_PARCELS: 'GOT_PARCELS',
+  SET_PARCELS: 'SET_PARCELS',
   SET_CONTRACTS: 'SET_CONTRACTS'
 });
 
@@ -17,7 +17,7 @@ export default class ContextService {
   static reduce(action) {
     const { type, payload } = action;
     switch (type) {
-      case ContextActions.GOT_PARCELS:
+      case ContextActions.SET_PARCELS:
         return {
           parcels: payload
         };
@@ -66,29 +66,43 @@ export default class ContextService {
   }
 
   async updateParcels() {
-    const { account, parcel } = this.state;
+    const { account, parcel, parcels } = this.state;
     if (account && parcel) {
       const transferEvent = parcel.filters.Transfer(null, account);
       const events = await parcel.queryFilter(transferEvent);
+
+      const newParcels = parcels ? parcels : [];
+
+      const client = create('http://127.0.0.1:45005/'); // Put any gateway here, using local node
+      // const client = create('https://opensea.mypinata.cloud/ipfs'); // Put any gateway here, using local node
+
       const parcelTokenIds = events.splice(0, 5).map(async (e) => {
         const tokenId = e.args[2].toNumber();
         const tokenIdUri = await parcel.tokenURI(tokenId);
         const ipfsSplit = tokenIdUri.split('/');
-        // const url = `https://gateway.pinata.cloud/ipfs/${ipfsSplit[2]}/${ipfsSplit[3]}`;
-        const url = `https://ipfs.io/ipfs/${ipfsSplit[2]}/${ipfsSplit[3]}`;
-        fetch(url, { mode: 'no-cors'}).then(console.log);
-        return url;
+        return client.cat(`${ipfsSplit[2]}/${ipfsSplit[3]}`);
       });
-      Promise.all(parcelTokenIds).then(console.log);
-      
-      const myParcels = parcels.slice(0, 5);
-      this.dispatch({
-        type: ContextActions.GOT_PARCELS,
-        payload: myParcels // get first 5 parcels
+
+      Promise.all(parcelTokenIds).then((tokenId) => {
+        tokenId.forEach(async (d) => {
+          for await (const buf of d) {
+            const jsonString = Buffer.from(buf).toString('utf8');
+            const parsedData = JSON.parse(jsonString);
+            this.dispatch({
+              type: ContextActions.SET_PARCELS,
+              payload: [...newParcels, parsedData]
+            })
+          }
+        })
       });
+      // const myParcels = parcels.slice(0, 5);
+      // this.dispatch({
+      //   type: ContextActions.SET_PARCELS,
+      //   payload: myParcels // get first 5 parcels
+      // });
     } else {
       this.dispatch({
-        type: ContextActions.GOT_PARCELS,
+        type: ContextActions.SET_PARCELS,
         payload: null
       });
     }
