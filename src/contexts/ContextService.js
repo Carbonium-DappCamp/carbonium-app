@@ -1,4 +1,3 @@
-import parcels from '../data/parcel.json';
 import { getAccount, getContract } from '../utils/common';
 import contractAddresses from '../abis/contract-address.json';
 import ParcelContractABI from '../abis/ParcelContract.json';
@@ -63,6 +62,35 @@ export default class ContextService {
     }
   }
 
+  async useOpenseaGateway(tokenUris) {
+    const parcels = tokenUris.map((t) => fetch(`https://opensea.mypinata.cloud/ipfs/${t}`).then((r) =>r.json()))
+    Promise.all(parcels).then((p) => {
+      this.dispatch({
+        type: ContextActions.SET_PARCELS,
+        payload: p
+      })
+    });
+  }
+
+  async useLocalNode(tokenUris) {
+    const client = create('http://127.0.0.1:45005/'); // Put any gateway here, using local node
+    const localCalls = tokenUris.map(client.cat);
+    Promise.all(localCalls).then((tokenId) => {
+      tokenId.forEach(async (d) => {
+        for await (const buf of d) {
+          const jsonString = Buffer.from(buf).toString('utf8');
+          const parsedData = JSON.parse(jsonString);
+          const { parcels } = this.state;
+          const newParcels = parcels ? parcels : [];
+          this.dispatch({
+            type: ContextActions.SET_PARCELS,
+            payload: [...newParcels, parsedData]
+          })
+        }
+      })
+    });
+  }
+
   async updateParcels() {
     // Reset parcels
     this.dispatch({
@@ -76,30 +104,14 @@ export default class ContextService {
     if (account && parcel) {
       const transferEvent = parcel.filters.Transfer(null, account);
       const events = await parcel.queryFilter(transferEvent);
-      const client = create('http://127.0.0.1:45005/'); // Put any gateway here, using local node
-      // const client = create('https://opensea.mypinata.cloud/ipfs'); // Put any gateway here, using local node
 
       const parcelTokenIds = events.map(async (e) => {
         const tokenId = e.args[2].toNumber();
         const tokenIdUri = await parcel.tokenURI(tokenId);
         const ipfsSplit = tokenIdUri.split('/');
-        return client.cat(`${ipfsSplit[2]}/${ipfsSplit[3]}`);
+        return `${ipfsSplit[2]}/${ipfsSplit[3]}`;
       });
-
-      Promise.all(parcelTokenIds).then((tokenId) => {
-        tokenId.forEach(async (d) => {
-          for await (const buf of d) {
-            const jsonString = Buffer.from(buf).toString('utf8');
-            const parsedData = JSON.parse(jsonString);
-            const { parcels } = this.state;
-            const newParcels = parcels ? parcels : [];
-            this.dispatch({
-              type: ContextActions.SET_PARCELS,
-              payload: [...newParcels, parsedData]
-            })
-          }
-        })
-      });
+      Promise.all(parcelTokenIds).then(this.useOpenseaGateway.bind(this));
     }
   }
 }
