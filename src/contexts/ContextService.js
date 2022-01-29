@@ -42,14 +42,12 @@ export default class ContextService {
       const parcel = getContract(contractAddresses.ParcelContract, ParcelContractABI);
       const carboniumToken = getContract(contractAddresses.CarboniumToken, CarboniumTokenABI);
       const carboniumDistribution = getContract(contractAddresses.CarboniumDistribution, CarboniumDistributionABI);
-      const account = await getAccount();
       this.dispatch({
         type: ContextActions.SET_CONTRACTS,
         payload: {
           parcel: parcel,
           carboniumToken: carboniumToken,
           carboniumDistribution: carboniumDistribution,
-          account: account
         }
       });
     } else {
@@ -66,17 +64,22 @@ export default class ContextService {
   }
 
   async updateParcels() {
-    const { account, parcel, parcels } = this.state;
+    // Reset parcels
+    this.dispatch({
+      type: ContextActions.SET_PARCELS,
+      payload: []
+    });
+
+    const { parcel } = this.state;
+    // Get new account
+    const account = await getAccount();
     if (account && parcel) {
       const transferEvent = parcel.filters.Transfer(null, account);
       const events = await parcel.queryFilter(transferEvent);
-
-      
-
       const client = create('http://127.0.0.1:45005/'); // Put any gateway here, using local node
       // const client = create('https://opensea.mypinata.cloud/ipfs'); // Put any gateway here, using local node
 
-      const parcelTokenIds = events.splice(0, 10).map(async (e) => {
+      const parcelTokenIds = events.map(async (e) => {
         const tokenId = e.args[2].toNumber();
         const tokenIdUri = await parcel.tokenURI(tokenId);
         const ipfsSplit = tokenIdUri.split('/');
@@ -96,11 +99,6 @@ export default class ContextService {
             })
           }
         })
-      });
-    } else {
-      this.dispatch({
-        type: ContextActions.SET_PARCELS,
-        payload: null
       });
     }
   }
