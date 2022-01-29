@@ -9,7 +9,7 @@
  const LOCAL_NETWORK = "LOCAL_NETWORK"
  
  // By default network is set to local, change it to TEST_NETWORK to make a switch
- const NETWORK = TEST_NETWORK
+ const NETWORK = LOCAL_NETWORK
  
  const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
  const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
@@ -26,7 +26,6 @@
  
  module.exports = {
    solidity: "0.8.0",
-   defaultNetwork: "test_network",
    networks: networks
  };
  
