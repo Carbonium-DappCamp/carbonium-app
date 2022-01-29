@@ -71,12 +71,12 @@ export default class ContextService {
       const transferEvent = parcel.filters.Transfer(null, account);
       const events = await parcel.queryFilter(transferEvent);
 
-      const newParcels = parcels ? parcels : [];
+      
 
       const client = create('http://127.0.0.1:45005/'); // Put any gateway here, using local node
       // const client = create('https://opensea.mypinata.cloud/ipfs'); // Put any gateway here, using local node
 
-      const parcelTokenIds = events.splice(0, 5).map(async (e) => {
+      const parcelTokenIds = events.splice(0, 10).map(async (e) => {
         const tokenId = e.args[2].toNumber();
         const tokenIdUri = await parcel.tokenURI(tokenId);
         const ipfsSplit = tokenIdUri.split('/');
@@ -88,6 +88,8 @@ export default class ContextService {
           for await (const buf of d) {
             const jsonString = Buffer.from(buf).toString('utf8');
             const parsedData = JSON.parse(jsonString);
+            const { parcels } = this.state;
+            const newParcels = parcels ? parcels : [];
             this.dispatch({
               type: ContextActions.SET_PARCELS,
               payload: [...newParcels, parsedData]
@@ -95,11 +97,6 @@ export default class ContextService {
           }
         })
       });
-      // const myParcels = parcels.slice(0, 5);
-      // this.dispatch({
-      //   type: ContextActions.SET_PARCELS,
-      //   payload: myParcels // get first 5 parcels
-      // });
     } else {
       this.dispatch({
         type: ContextActions.SET_PARCELS,
