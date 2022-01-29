@@ -3,6 +3,7 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
+import { useAppContext } from "../../contexts/AppContext";
 
 const providerOptions = {
 	walletconnect: {
