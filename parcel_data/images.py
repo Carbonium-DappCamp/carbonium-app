@@ -20,6 +20,7 @@ for p in parcels:
             'coordinates': [geo_bbox[0], geo_bbox[1]],
         },
     }
+    # 350x350 would be good
     response = service.image('mapbox.satellite', features=[geo_feature])
 
     # create image file

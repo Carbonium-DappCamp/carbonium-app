@@ -13,7 +13,7 @@ for p in parcels:
     # https://docs.opensea.io/docs/metadata-standards
 
     metadata = {
-        'name': f"Parcel {p['id']}",
+        'name': p['id'],
         'description': p['description'],
         'attributes': [
             {
