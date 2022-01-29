@@ -20,7 +20,7 @@ contract ParcelContract is
     mapping (address => bool) _hasClaimed;
     // TODO: parcel awards should be random, but for now increment through
     // until all are awarded
-    uint _availbleParcel = 0;
+    uint _availableParcel = 0;
 
     constructor() {
         // Mint all parcels initially
@@ -53,15 +53,15 @@ contract ParcelContract is
     // Grant a batch of parcel NFTs to a new owner.
     function grant(address _to, uint _count) public onlyOwner {
         require(_to != address(0));
-        require(_availbleParcel < (_maxParcels - _count));
+        require(_availableParcel < (_maxParcels - _count));
         for (uint i = 0; i < _count; i++) {
-            grantOne(_to, _availbleParcel);
+            grantOne(_to, _availableParcel);
         }
     }
 
     // Public for now, could be made private
     function grantOne(address _to, uint _tokenId) public onlyOwner {
         safeTransferFrom(msg.sender, _to, _tokenId);
-        _availbleParcel++;
+        _availableParcel++;
     }
 }
