@@ -30,7 +30,7 @@ const WalletConnectButton = () => {
 		const web3 = new Web3(provider.current);
 		// Update web3 context variable when provider is updated
 		contextService.setWeb3(web3);
-	}, [provider]);
+	}, [contextService, provider]);
 
 	// Set connected status
 	// eslint-disable-next-line react-hooks/exhaustive-deps
