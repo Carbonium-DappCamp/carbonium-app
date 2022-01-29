@@ -28,7 +28,7 @@ const WalletConnectButton = () => {
 
 	useEffect(() => {
 		contextService.updateParcels();
-	}, [accounts]);
+	}, [accounts, contextService]);
 
 	// Set connected status
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -80,6 +80,7 @@ const WalletConnectButton = () => {
 		})().catch((err) => {
 			console.error(err);
 		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	async function fetchAccountData() {
