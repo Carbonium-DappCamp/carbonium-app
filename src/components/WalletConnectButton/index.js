@@ -3,7 +3,6 @@ import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3Modal from "web3modal";
 import React, { useState, useEffect, useRef } from "react";
 import Web3 from "web3";
-import { useAppContext } from "../../contexts/AppContext";
 
 const providerOptions = {
 	walletconnect: {
@@ -42,7 +41,6 @@ const WalletConnectButton = () => {
 	});
 
 	// Attempt to reconnect to wallet on reload
-	// TODO: Fix caching so wallet will reconnect on reload without automatically triggering the modal onLoad to new users
 	useEffect(() => {
 		(async () => {
 			(async function () {
@@ -118,22 +116,19 @@ const WalletConnectButton = () => {
 		// Subscribe to accounts change
 		provider.current.on("accountsChanged", (_accounts) => {
 			setAccounts(_accounts);
-			console.log("Accounts changed to: ", accounts);
 		});
 
 		// Subscribe to chainId change
 		provider.current.on("chainChanged", (_chainId) => {
 			chainId.current = _chainId;
-			console.log("ChainID changed to: ", chainId);
 		});
 
 		provider.current.on("connect", () => {
-			//setConnected(true);
 			fetchAccountData();
 		});
 
+		// TODO: disconnect is not firing when metamask disconnects which breaks the button state
 		provider.current.on("disconnect", (e) => {
-			console.log(e);
 			onDisconnect();
 		});
 	}
@@ -150,7 +145,6 @@ const WalletConnectButton = () => {
 		setAccounts(null);
 		provider.current = null;
 		web3Modal.clearCachedProvider();
-		//setConnected(false);
 	}
 
 	const walletConnectedContent = () => {
