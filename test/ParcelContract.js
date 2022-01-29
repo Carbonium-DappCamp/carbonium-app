@@ -38,10 +38,17 @@ describe("Parcel Contract", () => {
       expect(approvedAddr == owner);
     });
     it ("Should emit a Transfer event", async function () {
-      expect(parcelContract.connect(owner).grant(addr1.address, 1))
-            .to
-            .emit(parcelContract, "Transfer")
-            .withArgs(owner.address, addr1.address, 0);
+      const maxParcels = await parcelContract.getMaxParcels();
+      const tx = await parcelContract.connect(owner).grant(addr1.address, 1);
+      const receipt = await tx.wait();
+      const eventDetails = await receipt.events?.filter((x)=>{return x.event == 'Transfer'});
+
+      expect(eventDetails.length).equal(1);
+      expect(eventDetails[0].args.from).equals(owner.address);
+      expect(eventDetails[0].args.to).equals(addr1.address);
+      expect(Number(eventDetails[0].args.tokenId)).lessThan(Number(maxParcels))
+          .and.greaterThanOrEqual(0);
+
       const addr1Balance = await parcelContract.connect(owner).balanceOf(addr1.address);
       expect(addr1Balance).to.equal(1);
     });
