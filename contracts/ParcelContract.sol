@@ -62,8 +62,8 @@ contract ParcelContract is
 
     // Grant a batch of parcel NFTs to a new owner.
     function grant(address _to, uint _count) public onlyOwner {
-        require(_to != address(0));
-        require(_parcelGrants < (_maxParcels - _count));
+        require(_to != address(0), "Token burn is not supported");
+        require(_parcelGrants < (_maxParcels - _count), "Request is more than available");
         for (uint i = 0; i < _count; i++) {
             uint newId = getRandomUnusedTokenId();
             grantOne(_to, newId);
