@@ -3,6 +3,7 @@ import parcels from '../data/parcel.json';
 // Actions
 const ContextActions = Object.freeze({
   GOT_PARCELS: 'GOT_PARCELS',
+  SET_PROVIDER: 'SET_PROVIDER'
 });
 
 export default class ContextService {
@@ -13,6 +14,10 @@ export default class ContextService {
       case ContextActions.GOT_PARCELS:
         return {
           parcels: payload
+        };
+      case ContextActions.SET_PROVIDER:
+        return {
+          web3: payload
         };
       default:
         return {};
@@ -26,6 +31,13 @@ export default class ContextService {
   setStateDispatch(state, dispatch) {
     this.state = state;
     this.dispatch = dispatch;
+  }
+
+  setWeb3(web3) {
+    this.dispatch({
+      type: ContextActions.SET_PROVIDER,
+      payload: web3
+    });
   }
 
   getParcels() {

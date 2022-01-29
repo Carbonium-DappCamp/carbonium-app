@@ -19,13 +19,16 @@ const web3Modal = new Web3Modal({
 });
 
 const WalletConnectButton = () => {
+	const { contextService } = useAppContext();
 	const [accounts, setAccounts] = useState(null);
 	const [connected, setConnected] = useState(false);
 	const chainId = useRef();
 	const provider = useRef();
 
 	useEffect(() => {
+		const web3 = new Web3(provider.current);
 		// Update web3 context variable when provider is updated
+		contextService.setWeb3(web3);
 	}, [provider]);
 
 	// Set connected status
