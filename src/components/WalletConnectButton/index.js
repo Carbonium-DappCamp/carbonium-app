@@ -26,11 +26,11 @@ const WalletConnectButton = () => {
 	const chainId = useRef();
 	const provider = useRef();
 
-	useEffect(() => {
-		const web3 = new Web3(provider.current);
-		// Update web3 context variable when provider is updated
-		contextService.setWeb3(web3);
-	}, [provider]);
+	// useEffect(() => {
+	// 	const web3 = new Web3(provider.current);
+	// 	// Update web3 context variable when provider is updated
+	// 	contextService.setWeb3(web3);
+	// }, [provider]);
 
 	// Set connected status
 	// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -117,6 +117,9 @@ const WalletConnectButton = () => {
 	async function listenForWalletChanges() {
 		console.log("Current provider is", provider.current);
 
+		const web3 = new Web3(provider.current);
+		contextService.setWeb3(web3);
+
 		// Subscribe to accounts change
 		provider.current.on("accountsChanged", (_accounts) => {
 			setAccounts(_accounts);
@@ -141,6 +144,7 @@ const WalletConnectButton = () => {
 	async function onDisconnect() {
 		console.log("Killing the wallet connection", provider);
 		//await provider.current.disconnect;
+		contextService.setWeb3(undefined);
 
 		// If the cached provider is not cleared,
 		// WalletConnect will default to the existing session

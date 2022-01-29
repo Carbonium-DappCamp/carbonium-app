@@ -6,19 +6,13 @@ import styles from './styles.module.scss';
 function Dashboard() {
 
   const {
-    state: { parcels, web3 },
+    state: { parcels, account },
     contextService,
   } = useAppContext();
 
   useEffect(() => {
-    console.log('Received WEB3', web3);
-  }, [web3]);
-
-  useEffect(() => {
-    if (parcels === undefined) {
-      contextService.getParcels();
-    }
-  }, []);
+    contextService.updateParcels();
+  }, [account]);
 
   return (
     <div className={styles.container}>
