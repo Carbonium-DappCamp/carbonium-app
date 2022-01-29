@@ -1,22 +1,43 @@
 import json
+import time
+import datetime
+
 
 parcels = json.load(open('parcels.json'))
-ipfsBaseURL = 'ipfs://QmeyFx44fGc58661j9gTcpdq48pMfyb6TmixcHwKNW8Fmo'
+ipfsBaseURL = 'ipfs://QmSwcMCafrzkvtBicQrNvZJy56D2V5AMEgXM4RryRCKMCn/'
 
 i = 0
 for p in parcels:
+    stock_ts = round(time.mktime(datetime.datetime.strptime(p['stock_ts'], "%Y-%m-%d").timetuple()))
+
+    # https://docs.opensea.io/docs/metadata-standards
 
     metadata = {
-        'attributes': {
-            'id': p['id'],
-            'country': p['country'],
-            'title': p['title'],
-            'description': p['description'],
-            'stock_ts': p['stock_ts'],
-            'stock': p['stock'],
-            'area': p['area'],
-            'geojson': p['geojson'],
-        },
+        'name': f"Parcel {p['id']}",
+        'description': p['description'],
+        'attributes': [
+            {
+                'trait_type': 'country',
+                'value': p['country'],
+            },
+            {
+                'trait_type': 'stock_ts',
+                'display_type': 'date',
+                'value': stock_ts,
+            },
+            {
+                'trait_type': 'stock',
+                'value': p['stock'],
+            },
+            {
+                'trait_type': 'area',
+                'value': p['area'],
+            },
+            {
+                'trait_type': 'geojson',
+                'value': p['geojson'],
+            },
+        ],
         'image': f'{ipfsBaseURL}/{i}.png',
     }
 
