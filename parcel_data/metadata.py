@@ -4,7 +4,7 @@ import datetime
 
 
 parcels = json.load(open('parcels.json'))
-ipfsBaseURL = 'ipfs://QmSwcMCafrzkvtBicQrNvZJy56D2V5AMEgXM4RryRCKMCn/'
+ipfsBaseURL = 'ipfs://QmRgdYhCnDdVo35eScanKrHqgK9Nv5K61zJmHyPhCYfpPW/'
 
 i = 0
 for p in parcels:
