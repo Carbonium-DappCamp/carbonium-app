@@ -38,8 +38,6 @@ const WalletConnectButton = () => {
 		} else {
 			setConnected(true);
 		}
-		console.log("Connection status: ", connected);
-		console.log("Current provider: ", provider.current);
 	});
 
 	// Attempt to reconnect to wallet on reload
@@ -50,36 +48,17 @@ const WalletConnectButton = () => {
 					try {
 						provider.current = await web3Modal.connect();
 					} catch (e) {
-						console.log("Could not get a wallet connection", e);
+						console.log(
+							"Could not get a wallet connection, clearing provider cache"
+						);
+						web3Modal.clearCachedProvider();
 						return;
 					}
 					listenForWalletChanges();
 					await fetchAccountData();
 				}
-
-				// From:
-				// Get the cached provider from LocalStorage
-				// const cachedProviderName = JSON.parse(
-				// 	localStorage.getItem("WEB3_CONNECT_CACHED_PROVIDER")
-				// );
-				// console.log(cachedProviderName);
-				// console.log(web3Modal);
-				// Get the connector for the cachedProviderName
-				// const connector = await web3Modal.providerController.providerOptions[
-				// 	cachedProviderName
-				// ].connector();
-				// // Evaluate connector() which returns a Proxy in the case of MetaMask
-				// const proxy = await connector(); // Some connector may need providerPackage and opts
-				// console.log("Proxy", proxy);
-				// // Get the working provider from your favorite library (ethers, web3, ...)
-				// const provider = new ethers.providers.Web3Provider(proxy); // If you use web3, then const web3 = new Web3(proxy);
-				// console.log("Provider", provider);
-				// // You can list the connected accounts without launching Web3Modal
-				// console.log("Accounts", await provider.listAccounts()); // If you use web3, then await web3.eth.getAccounts();
 			})();
-		})().catch((err) => {
-			console.error(err);
-		});
+		})().catch((err) => {});
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -87,21 +66,17 @@ const WalletConnectButton = () => {
 		// Get a Web3 instance for the wallet
 		const web3 = new Web3(provider.current);
 
-		console.log("Web3 instance is", web3);
-
 		// Get connected chain id from Ethereum node
 		const _chainId = await web3.eth.getChainId();
-		console.log(_chainId);
+		chainId.current = _chainId;
 
 		const _accounts = await web3.eth.getAccounts();
 
 		// MetaMask does not give you all accounts, only the selected account
-		console.log("Got accounts", _accounts);
 		setAccounts(_accounts);
 	}
 
 	async function onConnect() {
-		console.log("Opening a dialog", web3Modal);
 		try {
 			provider.current = await web3Modal.connect();
 		} catch (e) {
@@ -114,8 +89,6 @@ const WalletConnectButton = () => {
 	}
 
 	async function listenForWalletChanges() {
-		console.log("Current provider is", provider.current);
-
 		const web3 = new Web3(provider.current);
 		contextService.setWeb3(web3);
 
@@ -133,7 +106,6 @@ const WalletConnectButton = () => {
 			fetchAccountData();
 		});
 
-		// TODO: disconnect is not firing when metamask disconnects which breaks the button state
 		provider.current.on("disconnect", (e) => {
 			onDisconnect();
 		});
@@ -167,7 +139,7 @@ const WalletConnectButton = () => {
 				</div>
 			);
 		} catch (e) {
-			console.log(e);
+			setConnected(false);
 		}
 	};
 
