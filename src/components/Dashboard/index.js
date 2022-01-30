@@ -21,11 +21,8 @@ function Dashboard() {
 			try {
 				const acct = await getAccount();
 				const size = await parcel.balanceOf(acct);
-				console.log("Account: ", acct, "\nmaxParcels: ", parseInt(size));
 				setMaxParcels(parseInt(size));
-			} catch (e) {
-				console.log("No account connected");
-			}
+			} catch (e) {}
 		})();
 	});
 
@@ -59,7 +56,7 @@ function Dashboard() {
 				}}
 				defaultPageSize={6}
 				showSizeChanger={true}
-				pageSizeOptions={[6, 10, 20]}
+				pageSizeOptions={[6, 10, 15]}
 			></Pagination>
 		</div>
 	);

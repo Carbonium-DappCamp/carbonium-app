@@ -26,6 +26,4 @@ async function transferParcel(toAddr) {
 	});
 }
 
-async function getNFTBalance() {}
-
 export { getAccount, getContract, transferParcel };

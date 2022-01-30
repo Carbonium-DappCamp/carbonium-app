@@ -66,21 +66,17 @@ const WalletConnectButton = () => {
 		// Get a Web3 instance for the wallet
 		const web3 = new Web3(provider.current);
 
-		console.log("Web3 instance is", web3);
-
 		// Get connected chain id from Ethereum node
 		const _chainId = await web3.eth.getChainId();
-		console.log(_chainId);
+		chainId.current = _chainId;
 
 		const _accounts = await web3.eth.getAccounts();
 
 		// MetaMask does not give you all accounts, only the selected account
-		console.log("Got accounts", _accounts);
 		setAccounts(_accounts);
 	}
 
 	async function onConnect() {
-		console.log("Opening a dialog", web3Modal);
 		try {
 			provider.current = await web3Modal.connect();
 		} catch (e) {
@@ -93,8 +89,6 @@ const WalletConnectButton = () => {
 	}
 
 	async function listenForWalletChanges() {
-		console.log("Current provider is", provider.current);
-
 		const web3 = new Web3(provider.current);
 		contextService.setWeb3(web3);
 

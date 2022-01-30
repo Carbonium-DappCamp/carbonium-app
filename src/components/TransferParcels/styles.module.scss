@@ -1,0 +1,10 @@
+.container {
+  position: absolute;
+  left: 50px;
+  display: flex;
+  flex-direction: row;
+}
+
+.container > * {
+  margin: 10px;
+}
