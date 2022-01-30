@@ -45,19 +45,21 @@ function Dashboard() {
 		<div className={styles.container}>
 			<h1>My Parcels</h1>
 			<div className={styles.parcels}>{displayParcels()}</div>
-			<Pagination
-				total={maxParcels}
-				onChange={(page) => {
-					setPage(page);
-				}}
-				onShowSizeChange={(current, size) => {
-					setPage(current);
-					setShowSize(size);
-				}}
-				defaultPageSize={6}
-				showSizeChanger={true}
-				pageSizeOptions={[6, 10, 15]}
-			></Pagination>
+			<div className={styles.paginationContainer}>
+				<Pagination
+					total={maxParcels}
+					onChange={(page) => {
+						setPage(page);
+					}}
+					onShowSizeChange={(current, size) => {
+						setPage(current);
+						setShowSize(size);
+					}}
+					defaultPageSize={6}
+					showSizeChanger={true}
+					pageSizeOptions={[6, 10, 15]}
+				></Pagination>
+			</div>
 		</div>
 	);
 }
