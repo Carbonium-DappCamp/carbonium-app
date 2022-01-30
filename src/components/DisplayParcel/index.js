@@ -12,7 +12,13 @@ const parcelLayer = {
 };
 
 function DisplayParcel({ parcel }) {
-  const geojson = JSON.parse(parcel["geojson"]);
+  const name = parcel["name"];
+  const description = parcel["description"];
+  const country = parcel["attributes"][0].value;
+  const stock_ts = parcel["attributes"][1].value;
+  const stock = parcel["attributes"][2].value;
+  const area = parcel["attributes"][3].value;
+  const geojson = JSON.parse(parcel["attributes"][4].value);
 
   const [viewport, setViewport] = useState({
     longitude: (geojson["bbox"][0] + geojson["bbox"][2]) / 2,
@@ -32,17 +38,18 @@ function DisplayParcel({ parcel }) {
   return (
     <div className={styles.container}>
       <p>
-        id: {parcel["id"]}
+        name: {name}
         <br />
-        country: {parcel["country"]}
+        description: {description}
         <br />
-        title: {parcel["title"]}
+        country: {country}
         <br />
-        description: {parcel["description"]}
+        stock_ts: {stock_ts}
         <br />
-        area: {parcel["area"]}
+        stock: {stock}
         <br />
-        stock: {parcel["stock"]} ({parcel["stock_ts"]})
+        area: {area}
+        <br />
       </p>
       <div className={styles.map}>
         <ReactMapGL
