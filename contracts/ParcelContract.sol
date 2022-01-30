@@ -16,7 +16,7 @@ contract ParcelContract is
     Counters.Counter public _tokenIds;
     string public baseURI = 'ipfs://QmasZiB9nwU1NwDDVP11CHfqLJQnP8kgUcgZ7Y1v4AYX68';
 
-    uint constant _maxParcels = 50;
+    uint constant _maxParcels = 1000;
     //mapping (address => bool) _hasClaimed; // TODO: only allow one claim per ETH address?
 
     uint _parcelGrants = 0;
